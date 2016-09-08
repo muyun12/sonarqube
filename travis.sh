@@ -22,7 +22,6 @@ function configureTravis {
   source ~/.local/bin/install
 }
 configureTravis
-. installJDK8
 
 case "$TARGET" in
 

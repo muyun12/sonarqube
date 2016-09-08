@@ -1,5 +1,6 @@
 language: java
-sudo: false
+sudo: required
+dist: trusty
 install: true
 jdk: oraclejdk8
 script: ./travis.sh
