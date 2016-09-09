@@ -33,6 +33,7 @@ import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.component.ComponentDto;
 import org.sonar.db.metric.MetricDto;
+import org.sonar.db.user.UserDto;
 import org.sonar.server.exceptions.BadRequestException;
 
 import static java.lang.String.format;
@@ -104,6 +105,8 @@ public class SettingValidations {
 
       if (definition.type() == PropertyType.METRIC) {
         metric(data);
+      } else if (definition.type() == PropertyType.USER_LOGIN) {
+        login(data);
       } else {
         otherTypes(data, definition);
       }
@@ -124,6 +127,14 @@ public class SettingValidations {
       try (DbSession dbSession = dbClient.openSession(false)) {
         List<MetricDto> metrics = dbClient.metricDao().selectByKeys(dbSession, data.values);
         checkRequest(data.values.size() == metrics.size(), "Error when validating metric setting with key '%s' and values [%s]. A value is not a valid metric key.",
+          data.key, data.values.stream().collect(Collectors.joining(", ")));
+      }
+    }
+
+    private void login(SettingData data) {
+      try (DbSession dbSession = dbClient.openSession(false)) {
+        List<UserDto> users = dbClient.userDao().selectByLogins(dbSession, data.values);
+        checkRequest(data.values.size() == users.size(), "Error when validating login setting with key '%s' and values [%s]. A value is not a valid login.",
           data.key, data.values.stream().collect(Collectors.joining(", ")));
       }
     }
